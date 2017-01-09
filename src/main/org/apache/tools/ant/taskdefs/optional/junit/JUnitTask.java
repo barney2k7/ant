@@ -62,6 +62,7 @@ import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.util.FileUtils;
 import org.apache.tools.ant.util.LoaderUtils;
 import org.apache.tools.ant.util.SplitClassLoader;
+import org.apache.tools.ant.util.StringUtils;
 
 /**
  * Runs JUnit tests.
@@ -700,10 +701,10 @@ public class JUnitTask extends Task {
     /**
      * Creates a new JUnitRunner and enables fork of a new Java VM.
      *
-     * @throws Exception under ??? circumstances
+     * @throws Exception never
      * @since Ant 1.2
      */
-    public JUnitTask() throws Exception {
+    public JUnitTask() throws Exception { //NOSONAR
     }
 
     /**
@@ -1278,8 +1279,10 @@ public class JUnitTask extends Task {
         checkForkedPath(cmd);
 
         final TestResultHolder result = new TestResultHolder();
+        boolean success = false;
         try {
             result.exitCode = execute.execute();
+            success = true;
         } catch (final IOException e) {
             throw new BuildException("Process fork failed.", e, getLocation());
         } finally {
@@ -1296,7 +1299,7 @@ public class JUnitTask extends Task {
                             + " testcase not started or mixing ant versions?";
                 }
             } catch (final Exception e) {
-                e.printStackTrace();
+                log(StringUtils.getStackTrace(e), Project.MSG_INFO);
                 // ignored.
             } finally {
                 FileUtils.close(br);
@@ -1321,9 +1324,13 @@ public class JUnitTask extends Task {
             }
 
             if (!FILE_UTILS.tryHardToDelete(propsFile)) {
-                throw new BuildException("Could not delete temporary "
-                                         + "properties file '"
-                                         + propsFile.getAbsolutePath() + "'.");
+                String msg = "Could not delete temporary properties file '"
+                    + propsFile.getAbsolutePath() + "'.";
+                if (success) {
+                    throw new BuildException(msg); //NOSONAR
+                } else { // don't hide inner exception
+                    log(msg, Project.MSG_ERR);
+                }
             }
         }
 

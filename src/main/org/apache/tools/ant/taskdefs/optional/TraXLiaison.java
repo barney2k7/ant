@@ -143,7 +143,7 @@ public class TraXLiaison implements XSLTLiaison4, ErrorListener, XSLTLoggerAware
      * Constructor for TraXLiaison.
      * @throws Exception never
      */
-    public TraXLiaison() throws Exception {
+    public TraXLiaison() throws Exception { //NOSONAR
     }
 
     /**
@@ -316,7 +316,8 @@ public class TraXLiaison implements XSLTLiaison4, ErrorListener, XSLTLoggerAware
      * @see #addParam(java.lang.String, java.lang.String)
      * @see #setOutputProperty(java.lang.String, java.lang.String)
      */
-    private void createTransformer() throws Exception {
+    private void createTransformer()
+        throws IOException, ParserConfigurationException, SAXException, TransformerException {
         if (templates == null) {
             readTemplates();
         }
@@ -335,7 +336,7 @@ public class TraXLiaison implements XSLTLiaison4, ErrorListener, XSLTLoggerAware
         }
 
         if (traceConfiguration != null) {
-            if ("org.apache.xalan.transformer.TransformerImpl"
+            if ("org.apache.xalan.transformer.TransformerImpl" //NOSONAR
                 .equals(transformer.getClass().getName())) {
                 try {
                     final Class traceSupport =

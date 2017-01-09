@@ -97,7 +97,7 @@ public final class StringUtils {
     public static String getStackTrace(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw, true);
-        t.printStackTrace(pw);
+        t.printStackTrace(pw); //NOSONAR
         pw.flush();
         pw.close();
         return sw.toString();
@@ -199,7 +199,7 @@ public final class StringUtils {
      * @throws Exception if there is a problem.
      * @since Ant 1.7
      */
-    public static long parseHumanSizes(String humanSize) throws Exception {
+    public static long parseHumanSizes(String humanSize) throws Exception { //NOSONAR
         long factor = 1L;
         char s = humanSize.charAt(0);
         switch (s) {

@@ -62,7 +62,7 @@ public class ProjectHelperRepository {
             PROJECTHELPER2_CONSTRUCTOR = ProjectHelper2.class.getConstructor();
         } catch (Exception e) {
             // ProjectHelper2 must be available
-            throw new RuntimeException(e);
+            throw new BuildException(e);
         }
     }
 
@@ -108,7 +108,7 @@ public class ProjectHelperRepository {
                                + e.getClass().getName()
                                + ": " + e.getMessage() + ")");
             if (DEBUG) {
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.err); //NOSONAR
             }
         }
     }
@@ -175,7 +175,7 @@ public class ProjectHelperRepository {
                                + ProjectHelper.HELPER_PROPERTY + " ("
                                + e.getMessage() + ")");
             if (DEBUG) {
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.err); //NOSONAR
             }
         }
         return null;
@@ -203,7 +203,7 @@ public class ProjectHelperRepository {
             System.out.println("Unable to load ProjectHelper from service "
                     + ProjectHelper.SERVICE_ID + " (" + e.getMessage() + ")");
             if (DEBUG) {
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.err); //NOSONAR
             }
         }
         return null;
@@ -263,7 +263,7 @@ public class ProjectHelperRepository {
                 return helper;
             }
         }
-        throw new RuntimeException("BUG: at least the ProjectHelper2 should "
+        throw new BuildException("BUG: at least the ProjectHelper2 should "
                                    + "have supported the file " + buildFile);
     }
 
@@ -286,7 +286,7 @@ public class ProjectHelperRepository {
                 return helper;
             }
         }
-        throw new RuntimeException("BUG: at least the ProjectHelper2 should "
+        throw new BuildException("BUG: at least the ProjectHelper2 should "
                                    + "have supported the file " + antlib);
     }
 

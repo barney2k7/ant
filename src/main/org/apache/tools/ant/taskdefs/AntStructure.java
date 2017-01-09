@@ -36,6 +36,7 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.TaskContainer;
 import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.util.FileUtils;
 
 /**
  * Creates a partial DTD for Ant from the currently known tasks.
@@ -84,9 +85,12 @@ public class AntStructure extends Task {
 
         PrintWriter out = null;
         try {
+            FileOutputStream fos = null;
             try {
-                out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(output), "UTF8"));
+                fos = new FileOutputStream(output);
+                out = new PrintWriter(new OutputStreamWriter(fos, "UTF8"));
             } catch (final UnsupportedEncodingException ue) {
+                FileUtils.close(fos);
                 /*
                  * Plain impossible with UTF8, see
                  * http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html
@@ -386,8 +390,7 @@ public class AntStructure extends Task {
                     } catch (final IllegalAccessException ie) {
                         sb.append("CDATA ");
                     }
-                } else if (type.getSuperclass() != null
-                           && type.getSuperclass().getName().equals("java.lang.Enum")) {
+                } else if (Enum.class.isAssignableFrom(type)) {
                     try {
                         final Object[] values = (Object[]) type.getMethod("values", (Class[])  null)
                             .invoke(null, (Object[]) null);

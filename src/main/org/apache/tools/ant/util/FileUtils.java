@@ -1591,7 +1591,7 @@ public class FileUtils {
      *
      * @since Ant 1.7
      */
-    public static String getRelativePath(File fromFile, File toFile) throws Exception {
+    public static String getRelativePath(File fromFile, File toFile) throws Exception { //NOSONAR
         String fromPath = fromFile.getCanonicalPath();
         String toPath = toFile.getCanonicalPath();
 
@@ -1696,7 +1696,7 @@ public class FileUtils {
      */
     public String getDefaultEncoding() {
         InputStreamReader is = new InputStreamReader(
-            new InputStream() {
+            new InputStream() { //NOSONAR
                 public int read() {
                     return -1;
                 }

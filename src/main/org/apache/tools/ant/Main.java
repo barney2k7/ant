@@ -81,10 +81,10 @@ public class Main implements AntMain {
     private File buildFile; /* null */
 
     /** Stream to use for logging. */
-    private static PrintStream out = System.out;
+    private PrintStream out = System.out;
 
     /** Stream that we are using for logging error messages. */
-    private static PrintStream err = System.err;
+    private PrintStream err = System.err;
 
     /** The build targets. */
     private final Vector<String> targets = new Vector<String>();
@@ -143,7 +143,7 @@ public class Main implements AntMain {
      * Whether or not a logfile is being used. This is used to
      * check if the output streams must be closed.
      */
-    private static boolean isLogFileUsed = false;
+    private boolean isLogFileUsed = false;
 
     /**
      * optional thread priority
@@ -246,7 +246,7 @@ public class Main implements AntMain {
                 printMessage(be);
             }
         } catch (final Throwable exc) {
-            exc.printStackTrace();
+            exc.printStackTrace(); //NOSONAR
             printMessage(exc);
         } finally {
             handleLogfile();
@@ -269,7 +269,7 @@ public class Main implements AntMain {
      *
      * @since Ant 1.6
      */
-    private static void handleLogfile() {
+    private void handleLogfile() {
         if (isLogFileUsed) {
             FileUtils.close(out);
             FileUtils.close(err);
@@ -355,7 +355,10 @@ public class Main implements AntMain {
                 try {
                     final File logFile = new File(args[i + 1]);
                     i++;
-                    logTo = new PrintStream(new FileOutputStream(logFile));
+                    // life-cycle of FileOutputStream is controlled by
+                    // logTo which becomes "out" and is closed in
+                    // handleLogfile
+                    logTo = new PrintStream(new FileOutputStream(logFile)); //NOSONAR
                     isLogFileUsed = true;
                 } catch (final IOException ioe) {
                     final String msg = "Cannot write on the specified log file. "
@@ -878,13 +881,13 @@ public class Main implements AntMain {
                     // but if we don't, we lose valuable information
                     System.err.println("Caught an exception while logging the"
                                        + " end of the build.  Exception was:");
-                    t.printStackTrace();
+                    t.printStackTrace(); //NOSONAR
                     if (error != null) {
                         System.err.println("There has been an error prior to"
                                            + " that:");
-                        error.printStackTrace();
+                        error.printStackTrace(); //NOSONAR
                     }
-                    throw new BuildException(t);
+                    throw new BuildException(t); //NOSONAR
                 }
             } else if (error != null) {
                 project.log(error.toString(), Project.MSG_ERR);
@@ -975,10 +978,6 @@ public class Main implements AntMain {
         project.setInputHandler(handler);
     }
 
-    // TODO: (Jon Skeet) Any reason for writing a message and then using a bare
-    // RuntimeException rather than just using a BuildException here? Is it
-    // in case the message could end up being written to no loggers (as the
-    // loggers could have failed to be created due to this failure)?
     /**
      * Creates the default build logger for sending build events to the ant
      * log.
@@ -1000,7 +999,7 @@ public class Main implements AntMain {
                 System.err.println("The specified logger class "
                     + loggerClassname
                     + " could not be used because " + e.getMessage());
-                throw new RuntimeException();
+                throw e;
             }
         } else {
             logger = new DefaultLogger();

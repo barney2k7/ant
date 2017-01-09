@@ -58,6 +58,7 @@ import org.apache.tools.ant.util.ClasspathUtils;
 import org.apache.tools.ant.util.FileNameMapper;
 import org.apache.tools.ant.util.FileUtils;
 import org.apache.tools.ant.util.ResourceUtils;
+import org.apache.tools.ant.util.StringUtils;
 
 /**
  * Processes a set of XML documents via XSLT. This is
@@ -720,7 +721,7 @@ public class XSLTProcess extends MatchingTask implements XSLTLogger {
      * @return the requested class.
      * @exception Exception if the class could not be loaded.
      */
-    private Class loadClass(final String classname) throws Exception {
+    private Class loadClass(final String classname) throws ClassNotFoundException {
         setupLoader();
         if (loader == null) {
             return Class.forName(classname);
@@ -831,7 +832,7 @@ public class XSLTProcess extends MatchingTask implements XSLTLogger {
             if (outFileName == null || outFileName.length == 0) {
                 log("Skipping " + inFile + " it cannot get mapped to output.", Project.MSG_VERBOSE);
                 return;
-            } else if (outFileName == null || outFileName.length > 1) {
+            } else if (outFileName.length > 1) {
                 log("Skipping " + inFile + " its mapping is ambiguos.", Project.MSG_VERBOSE);
                 return;
             }
@@ -952,7 +953,7 @@ public class XSLTProcess extends MatchingTask implements XSLTLogger {
                 try {
                     resolveProcessor(PROCESSOR_TRAX);
                 } catch (final Throwable e1) {
-                    e1.printStackTrace();
+                    log(StringUtils.getStackTrace(e1), Project.MSG_ERR);
                     handleError(e1);
                 }
             }
@@ -1379,7 +1380,7 @@ public class XSLTProcess extends MatchingTask implements XSLTLogger {
      * @since Ant 1.7
      */
     private void setLiaisonDynamicFileParameters(
-        final XSLTLiaison liaison, final File inFile) throws Exception {
+        final XSLTLiaison liaison, final File inFile) throws Exception { //NOSONAR
         if (fileNameParameter != null) {
             liaison.addParam(fileNameParameter, inFile.getName());
         }

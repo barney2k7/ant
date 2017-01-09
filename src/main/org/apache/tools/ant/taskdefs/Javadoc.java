@@ -1313,7 +1313,7 @@ public class Javadoc extends Task {
      * cannot be static in inner classes.) The first letter
      * from each element is used to build up the scope string.
      */
-    static final String[] SCOPE_ELEMENTS = {
+    static final String[] SCOPE_ELEMENTS = { //NOSONAR
         "overview", "packages", "types", "constructors",
         "methods", "fields"
     };
@@ -1772,10 +1772,12 @@ public class Javadoc extends Task {
                 useExternalFile, tmpList, srcListWriter);
 
             if (useExternalFile) {
-                srcListWriter.flush();
+                srcListWriter.flush(); //NOSONAR
             }
         } catch (final IOException e) {
-            tmpList.delete();
+            if (tmpList != null) {
+                tmpList.delete();
+            }
             throw new BuildException("Error creating temporary file",
                                      e, getLocation());
         } finally {
@@ -2024,7 +2026,8 @@ public class Javadoc extends Task {
                     // is the href a valid URL
                     try {
                         final URL base = new URL("file://.");
-                        new URL(base, la.getHref());
+                        // created for the side effect of throwing a MalformedURLException
+                        new URL(base, la.getHref()); //NOSONAR
                         link = la.getHref();
                     } catch (final MalformedURLException mue) {
                         // ok - just skip

@@ -84,7 +84,7 @@ public class ArgumentProcessorRegistry {
             }
 
             InputStream systemResource = ClassLoader.getSystemResourceAsStream(SERVICE_ID);
-            if (systemResource != null) {
+            if (systemResource != null) { //NOSONAR
                 ArgumentProcessor processor = getProcessorByService(systemResource);
                 registerArgumentProcessor(processor);
             }
@@ -93,7 +93,7 @@ public class ArgumentProcessorRegistry {
                     + SERVICE_ID + " (" + e.getClass().getName() + ": "
                     + e.getMessage() + ")");
             if (DEBUG) {
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.err); //NOSONAR
             }
         }
     }

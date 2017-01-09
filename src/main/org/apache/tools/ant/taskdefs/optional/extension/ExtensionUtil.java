@@ -29,6 +29,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.util.FileUtils;
 
 /**
  * A set of useful methods relating to extensions.
@@ -130,8 +131,9 @@ public final class ExtensionUtil {
                                         final boolean includeImpl,
                                         final boolean includeURL)
         throws BuildException {
+        JarFile jarFile = null;
         try {
-            final JarFile jarFile = new JarFile(file);
+            jarFile = new JarFile(file);
             final Extension[] extensions =
                 Extension.getAvailable(jarFile.getManifest());
             for (int i = 0; i < extensions.length; i++) {
@@ -140,6 +142,8 @@ public final class ExtensionUtil {
             }
         } catch (final Exception e) {
             throw new BuildException(e.getMessage(), e);
+        } finally {
+            FileUtils.close(jarFile);
         }
     }
 
@@ -201,8 +205,9 @@ public final class ExtensionUtil {
      */
     static Manifest getManifest(final File file)
         throws BuildException {
+        JarFile jarFile = null;
         try {
-            final JarFile jarFile = new JarFile(file);
+            jarFile = new JarFile(file);
             Manifest m = jarFile.getManifest();
             if (m == null) {
                 throw new BuildException(file + " doesn't have a MANIFEST");
@@ -210,6 +215,9 @@ public final class ExtensionUtil {
             return m;
         } catch (final IOException ioe) {
             throw new BuildException(ioe.getMessage(), ioe);
+        } finally {
+            FileUtils.close(jarFile);
         }
     }
+
 }

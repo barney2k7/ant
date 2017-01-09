@@ -354,6 +354,7 @@ public class RExecTask extends Task {
 
         /**  Create the telnet client object */
         AntRExecClient rexec = null;
+        boolean success = false;
         try {
             rexec = new AntRExecClient();
             try {
@@ -361,7 +362,7 @@ public class RExecTask extends Task {
             } catch (IOException e) {
                 throw new BuildException("Can't connect to " + server);
             }
-            if (userid != null && password != null && command != null
+            if (userid != null && password != null && command != null //NOSONAR
                 && rexecTasks.size() == 0) {
                 // simple one-shot execution
                 rexec.rexec(userid, password, command);
@@ -372,6 +373,7 @@ public class RExecTask extends Task {
 
             /** Keep reading input stream until end of it or time-out */
             rexec.waitForEOF(defaultTimeout);
+            success = true;
         } catch (IOException e) {
             throw new BuildException("Error r-executing command", e);
         } finally {
@@ -379,8 +381,12 @@ public class RExecTask extends Task {
                 try {
                     rexec.disconnect();
                 } catch (IOException e) {
-                    throw new BuildException("Error disconnecting from "
-                                             + server);
+                    String msg = "Error disconnecting from " + server;
+                    if (success) {
+                        throw new BuildException(msg); //NOSONAR
+                    } else { // don't hide inner exception
+                        log(msg, Project.MSG_ERR);
+                    }
                 }
             }
         }

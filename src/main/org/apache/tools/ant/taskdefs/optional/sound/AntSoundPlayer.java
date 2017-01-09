@@ -36,7 +36,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Project;
-
+import org.apache.tools.ant.util.FileUtils;
 
 
 /**
@@ -109,7 +109,7 @@ public class AntSoundPlayer implements LineListener, BuildListener {
             project.log("Audio format is not yet supported: "
                 + uafe.getMessage());
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            ioe.printStackTrace(); //NOSONAR
         }
 
         if (audioInputStream != null) {
@@ -117,23 +117,28 @@ public class AntSoundPlayer implements LineListener, BuildListener {
             DataLine.Info   info = new DataLine.Info(Clip.class, format,
                                              AudioSystem.NOT_SPECIFIED);
             try {
-                audioClip = (Clip) AudioSystem.getLine(info);
-                audioClip.addLineListener(this);
-                audioClip.open(audioInputStream);
-            } catch (LineUnavailableException e) {
-                project.log("The sound device is currently unavailable");
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                try {
+                    audioClip = (Clip) AudioSystem.getLine(info);
+                    audioClip.addLineListener(this);
+                    audioClip.open(audioInputStream);
+                } catch (LineUnavailableException e) {
+                    project.log("The sound device is currently unavailable");
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace(); //NOSONAR
+                }
 
-            if (duration != null) {
-                playClip(audioClip, duration.longValue());
-            } else {
-                playClip(audioClip, loops);
+                if (duration != null) {
+                    playClip(audioClip, duration.longValue());
+                } else {
+                    playClip(audioClip, loops);
+                }
+                if (audioClip != null) {
+                    audioClip.drain();
+                }
+            } finally {
+                FileUtils.close(audioClip);
             }
-            audioClip.drain();
-            audioClip.close();
         } else {
             project.log("Can't get data from file " + file.getName());
         }

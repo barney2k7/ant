@@ -459,7 +459,7 @@ public class JDependTask extends Task {
         PrintWriter pw = null;
         if (getOutputFile() != null) {
             try {
-                fw = new FileWriter(getOutputFile().getPath());
+                fw = new FileWriter(getOutputFile().getPath()); //NOSONAR
             } catch (IOException e) {
                 String msg = "JDepend Failed when creating the output file: "
                     + e.getMessage();
@@ -553,7 +553,7 @@ public class JDependTask extends Task {
             }
 
             jdepend.analyze();
-            if (pw.checkError()) {
+            if (pw != null && pw.checkError()) {
                 throw new IOException("Encountered an error writing JDepend"
                                       + " output");
             }

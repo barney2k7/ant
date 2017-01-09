@@ -249,7 +249,7 @@ public class PropertyFile extends Task {
             throw new BuildException(x, getLocation());
         }
         try {
-            OutputStream os = new FileOutputStream(propertyfile);
+            OutputStream os = new FileOutputStream(propertyfile); //NOSONAR
             try {
                 try {
                     os.write(baos.toByteArray());
@@ -390,7 +390,7 @@ public class PropertyFile extends Task {
             } catch (NullPointerException npe) {
                 // Default to string type
                 // which means do nothing
-                npe.printStackTrace();
+                npe.printStackTrace(); //NOSONAR
             }
 
             if (newValue == null) {
